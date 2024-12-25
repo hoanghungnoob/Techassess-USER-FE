@@ -227,7 +227,7 @@ export default {
         }
 
         // Kiểm tra mô tả nếu có giá trị
-        if (detail.value >= 3 && isCriteriaToCheck) {
+        if (detail.value >= 4 && isCriteriaToCheck) {
           const isDescriptionFilled =
             detail.description && detail.description.trim() !== "";
           if (!isDescriptionFilled) {
@@ -344,7 +344,7 @@ export default {
       );
 
       // Kiểm tra điều kiện để hiển thị mô tả
-      return question && question.value >= 3;
+      return question && question.value >= 4;
     },
     selectPerformanceValue(
       criteriaId,
@@ -386,8 +386,8 @@ export default {
       if (assessDetail) {
         assessDetail.value = value;
 
-        // Xóa ô nhập "description" nếu giá trị < 3
-        if (value < 3) {
+        // Xóa ô nhập "description" nếu giá trị < 4
+        if (value < 4) {
           assessDetail.description = null; // Hoặc "" tùy thuộc vào yêu cầu
         }
       }
