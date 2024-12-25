@@ -156,15 +156,15 @@ export default {
         ) {
           this.listCriteria = this.listCriteria.filter(
             (c) =>
-              c.title !== "Đóng góp cá nhân và kết quả" &&
-              c.title !== "Mục tiêu quý tiếp theo"
+              c.title !== "Đóng góp của bản thân và kết quả" &&
+              c.title !== "Dự kiến mục tiêu của bản thân quý tiếp theo"
           );
         } else {
           this.listCriteria = this.listCriteria.filter(
             (c) =>
-              c.title !== "Đóng góp cá nhân và kết quả" &&
-              c.title !== "Đánh giá của quản lý" &&
-              c.title !== "Mục tiêu quý tiếp theo"
+              c.title !== "Đóng góp của bản thân và kết quả" &&
+              c.title !== "Dự kiến mục tiêu của bản thân quý tiếp theo" &&
+              c.title !== "Đánh giá của quản lý"
           );
         }
         this.initPerfValues();
