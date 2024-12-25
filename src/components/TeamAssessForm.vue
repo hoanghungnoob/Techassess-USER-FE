@@ -223,7 +223,6 @@ export default {
         const isCriteriaToCheck = detail.criteriaId !== 8;
         // Kiểm tra xem giá trị đã được chọn hay chưa
         if (isCriteriaToCheck && (!detail.value || detail.value === 0)) {
-          console.log("hí ae")
           allValuesSelected = false;
         }
 
