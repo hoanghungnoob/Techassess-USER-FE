@@ -1,8 +1,8 @@
 <template>
   <div class="container-fluid row justify-content-md-center align-items-center" v-if="profile">
     <!-- Left Menu -->
-    <div class="col-md-4 left-menu p-3 d-flex flex-column">
-      <div class="profile mb-3 d-flex align-items-center justify-content-around">
+    <div :class="['left-menu p-3 d-flex flex-column', firstUnsubmitted ? 'col-md-4' : 'col-md-8']">
+      <div :class="['profile mb-3 d-flex align-items-center justify-content-around', { 'd-none': !firstUnsubmitted }]">
         <div class="avatar">
           <img :src="profile.fileInfo ? profile.fileInfo.fileUrl : defaultImage" alt="avatar" />
         </div>
@@ -81,7 +81,7 @@
     </div>
 
     <!-- Right Menu -->
-    <div class="col-md-8 right-menu p-4">
+    <div :class="['col-md-8 right-menu p-4', { 'd-none': !firstUnsubmitted }]">
       <component :is="isViewing ? 'TeamAssessDetailsForm' : 'TeamAssessForm'" :selectedPerson="selectedPerson"
         :userInfo="userInfo" @updateSelectedPerson="handleUpdateSelectedPerson" />
     </div>
@@ -104,6 +104,7 @@ export default {
   },
   data() {
     return {
+      firstUnsubmitted: 1,
       userInfo: null,
       profile: null,
       teamMates: [],
@@ -216,6 +217,9 @@ export default {
           firstUnsubmitted.isProcessing = true;
           this.selectedPerson = firstUnsubmitted;
           this.profile = firstUnsubmitted;
+        } else {
+          this.profile = this.teamMates[0];
+         this.firstUnsubmitted = null;
         }
       } catch (error) {
         console.error("Error fetching team members:", error);
@@ -508,5 +512,8 @@ tbody>tr>td {
 
 .content>p {
   color: black;
+}
+.hidden {
+    display: none !important;
 }
 </style>

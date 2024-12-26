@@ -156,15 +156,15 @@ export default {
         ) {
           this.listCriteria = this.listCriteria.filter(
             (c) =>
-              c.title !== "Đóng góp cá nhân và kết quả" &&
-              c.title !== "Mục tiêu quý tiếp theo"
+              c.title !== "Đóng góp của bản thân và kết quả" &&
+              c.title !== "Dự kiến mục tiêu của bản thân quý tiếp theo"
           );
         } else {
           this.listCriteria = this.listCriteria.filter(
             (c) =>
-              c.title !== "Đóng góp cá nhân và kết quả" &&
-              c.title !== "Đánh giá của quản lý" &&
-              c.title !== "Mục tiêu quý tiếp theo"
+              c.title !== "Đóng góp của bản thân và kết quả" &&
+              c.title !== "Dự kiến mục tiêu của bản thân quý tiếp theo" &&
+              c.title !== "Đánh giá của quản lý"
           );
         }
         this.initPerfValues();
@@ -227,7 +227,7 @@ export default {
         }
 
         // Kiểm tra mô tả nếu có giá trị
-        if (detail.value >= 3 && isCriteriaToCheck) {
+        if (detail.value >= 4 && isCriteriaToCheck) {
           const isDescriptionFilled =
             detail.description && detail.description.trim() !== "";
           if (!isDescriptionFilled) {
@@ -344,7 +344,7 @@ export default {
       );
 
       // Kiểm tra điều kiện để hiển thị mô tả
-      return question && question.value >= 3;
+      return question && question.value >= 4;
     },
     selectPerformanceValue(
       criteriaId,
@@ -386,8 +386,8 @@ export default {
       if (assessDetail) {
         assessDetail.value = value;
 
-        // Xóa ô nhập "description" nếu giá trị < 3
-        if (value < 3) {
+        // Xóa ô nhập "description" nếu giá trị < 4
+        if (value < 4) {
           assessDetail.description = null; // Hoặc "" tùy thuộc vào yêu cầu
         }
       }
