@@ -1,8 +1,9 @@
 <template>
   <div class="container-fluid row justify-content-md-center align-items-center" v-if="profile">
     <!-- Left Menu -->
-    <div :class="['left-menu p-3 d-flex flex-column', firstUnsubmitted ? 'col-md-4' : 'col-md-8']">
-      <div :class="['profile mb-3 d-flex align-items-center justify-content-around', { 'd-none': !firstUnsubmitted }]">
+    <div
+      :class="['left-menu p-3 d-flex flex-column', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER' ) && !firstUnsubmitted ? 'col-md-8' : 'col-md-4']">
+      <div :class="['profile mb-3 d-flex align-items-center justify-content-around', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER' ) && !firstUnsubmitted ? 'd-none' : 'd-flex']">
         <div class="avatar">
           <img :src="profile.fileInfo ? profile.fileInfo.fileUrl : defaultImage" alt="avatar" />
         </div>
@@ -81,7 +82,7 @@
     </div>
 
     <!-- Right Menu -->
-    <div :class="['col-md-8 right-menu p-4', { 'd-none': !firstUnsubmitted }]">
+    <div :class="['col-md-8 right-menu p-4', { 'd-none': !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted}, {'d-flex': userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER')}]">
       <component :is="isViewing ? 'TeamAssessDetailsForm' : 'TeamAssessForm'" :selectedPerson="selectedPerson"
         :userInfo="userInfo" @updateSelectedPerson="handleUpdateSelectedPerson" />
     </div>
@@ -162,12 +163,13 @@ export default {
         console.error("Error fetching assessments:: ", error);
       }
     },
+  
+    
 
     async fetchTeamMates() {
       try {
         const loggedInUserId = this.userInfo.id;
         const res = await UserService.fetchTeamsByUserId(loggedInUserId);
-
         if (!res) {
           toast.error("Bạn không đang trong dự án nào");
           return;
@@ -218,8 +220,10 @@ export default {
           this.selectedPerson = firstUnsubmitted;
           this.profile = firstUnsubmitted;
         } else {
+          // Check thêm nếu role là user bình thường thì ẩn 
+          // Check role là manager thì vẫn cho hiện cái firstUnsubmitted
           this.profile = this.teamMates[0];
-         this.firstUnsubmitted = null;
+          this.firstUnsubmitted = null;
         }
       } catch (error) {
         console.error("Error fetching team members:", error);
@@ -297,6 +301,8 @@ export default {
     },
     calculateWorkTime() {
       const userInfo = localStorage.getItem("userInfo");
+      console.log("userInfo.userRoles.some(role => role.role.id !== 3 && role.role.name !== 'MANAGER') : ", userInfo);
+
       if (userInfo && userInfo.dateJoinCompany) {
         const joinDate = new Date(userInfo.dateJoinCompany);
         const currentDate = new Date();
@@ -513,7 +519,8 @@ tbody>tr>td {
 .content>p {
   color: black;
 }
+
 .hidden {
-    display: none !important;
+  display: none !important;
 }
 </style>
