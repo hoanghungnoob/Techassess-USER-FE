@@ -192,11 +192,20 @@ export default {
       },
       deep: true,
     },
+    'selectedPerson.userProjects.0.id': {
+      handler(newValue) {
+        if (newValue) {
+          this.loadCriteria();
+        }
+      },
+      immediate: true,
+    },
   },
   methods: {
     async loadCriteria() {
       try {
-        const res = await AssessService.fetchListData();
+        const projectId = this.selectedPerson.userProjects[0].id;
+        const res = await AssessService.fetchListData(projectId);
         if (res.code === 1010) {
           this.listCriteria = res.data;
         }
