@@ -55,11 +55,8 @@
         </div>
       </div>
       <div v-else class="spandes text-start">
-        <span>
-          {{
-            result.criterias.find((rc) => rc.id == criteria.id)?.answerUser
-              .description
-          }}
+        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []" :key="index">
+          {{answer.fromUserName?answer.fromUserName + ": " : "" }} {{ answer.description }}<br> 
         </span>
       </div>
     </div>
@@ -246,14 +243,27 @@ export default {
                     }
                   }
                 } else if (user) {
-                  // Nếu không có question, bổ sung answerUser là fromUser
-                  resultCriteria.answerUser = {
-                    id: user.id,
-                    avt: user.fileInfoResDto?.url
-                      ? user.fileInfoResDTO.url
-                      : "/images/avatar.png",
-                    description: assessDetail.description,
-                  };
+                  if (!resultCriteria.answerUser) {
+                    resultCriteria.answerUser = [];
+                  }
+
+                  if (this.result.toUserId == user.id) {
+                    resultCriteria.answerUser.push({
+                      fromUserName: "",
+                      avt: user.fileInfoResDto?.url
+                        ? user.fileInfoResDTO.url
+                        : "/images/avatar.png",
+                      description: assessDetail.description,
+                    });
+                  } else {
+                    resultCriteria.answerUser.push({
+                      fromUserName: user.name,
+                      avt: user.fileInfoResDto?.url
+                        ? user.fileInfoResDTO.url
+                        : "/images/avatar.png",
+                      description: assessDetail.description,
+                    });
+                  }
                 }
               }
             });
@@ -274,7 +284,7 @@ export default {
 
         // bỏ tiêu chí Đánh giá của quản lí ra khỏi list
         this.listCriteria = this.listCriteria.filter(
-          (c) => c.title !== "Đánh giá của quản lý"
+          (c) => c.visibleFor !== "MANAGER" && c.questionId !== null
         );
       } catch (error) {
         console.error("Error fetching criteria list:", error);
@@ -374,7 +384,7 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 
-.table>table {
+.table > table {
   width: 100%;
   margin-bottom: 1rem;
   border-collapse: collapse;
@@ -427,7 +437,7 @@ export default {
   padding-left: 20px;
 }
 
-.content>p {
+.content > p {
   color: black;
 }
 
@@ -627,7 +637,6 @@ export default {
 
 /* Đối với màn hình trung bình (máy tính bảng) */
 @media (min-width: 576px) and (max-width: 768px) {
-
   .left-menu,
   .right-menu {
     height: auto;
