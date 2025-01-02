@@ -316,7 +316,9 @@ export default {
     },
     async loadCriteria() {
       try {
-        const res = await AssessService.fetchListData();
+        const user = JSON.parse(localStorage.getItem("user"));
+        const projectId = user.userProjects[0].id;
+        const res = await AssessService.fetchListData(projectId);
         if (res.code === 1010) {
           this.listCriteria = res.data;
         }
