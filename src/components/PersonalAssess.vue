@@ -316,14 +316,17 @@ export default {
     },
     async loadCriteria() {
       try {
-        const res = await AssessService.fetchListData();
+        const user = JSON.parse(localStorage.getItem("user"));
+        const projectId = user.userProjects[0].id;
+        const res = await AssessService.fetchListData(projectId);
         if (res.code === 1010) {
           this.listCriteria = res.data;
         }
 
-        // bỏ tiêu chí Đánh giá của quản lí ra khỏi list
+        // bỏ các tiêu chí của riêng team và manager ra khỏi list
         this.listCriteria = this.listCriteria.filter(
-          (c) => c.title !== "Đánh giá của quản lý"
+          (c) => c.visibleFor !== "CROSS" &&
+                c.visibleFor !== "MANAGER"
         );
       } catch (error) {
         console.error("Error fetching criteria list:", error);
@@ -339,8 +342,7 @@ export default {
       let firstErrorRef = null;
 
       this.perfValues.assessDetails.forEach((detail) => {
-        const isCriteriaToCheck =
-          detail.criteriaId !== 6 && detail.criteriaId !== 7;
+        const isCriteriaToCheck = detail.questionId !== null;
         // Kiểm tra xem giá trị đã được chọn hay chưa
         if (isCriteriaToCheck && (!detail.value || detail.value === 0)) {
           allValuesSelected = false;
