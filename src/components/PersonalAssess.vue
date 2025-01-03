@@ -374,6 +374,8 @@ export default {
         ) {
           allDescriptionsFilled = false;
           detail.hasError = true;
+        } else {
+          detail.hasError = false;
         }
       });
 
@@ -395,6 +397,7 @@ export default {
         return;
       }
 
+      this.isAssess = true;
       // Nếu tất cả hasError đều false thì xóa field hasError
       this.perfValues.assessDetails.forEach((detail) => {
         if (!detail.hasError) {

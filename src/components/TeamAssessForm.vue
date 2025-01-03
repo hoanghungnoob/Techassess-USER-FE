@@ -145,7 +145,7 @@
 
     <!-- Submit Button -->
     <div class="d-flex justify-content-end">
-      <button class="btn btn-primary" type="submit">Gửi Đánh Giá</button>
+      <button :disabled="isLoading" class="btn btn-primary" type="submit">Gửi Đánh Giá</button>
     </div>
   </form>
 </template>
@@ -171,6 +171,7 @@ export default {
       sortOrder: "asc",
       totalPoint: 0,
       userRole: "manager",
+      isLoading: false,
     };
   },
 
@@ -345,6 +346,8 @@ export default {
         ) {
           allDescriptionsFilled = false;
           detail.hasError = true;
+        } else {
+          detail.hasError = false;
         }
       });
 
@@ -361,6 +364,7 @@ export default {
         return;
       }
 
+      this.isLoading = true;
       this.perfValues.assessDetails.forEach((detail) => {
         if (!detail.hasError) {
           delete detail.hasError;
