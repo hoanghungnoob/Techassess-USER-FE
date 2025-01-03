@@ -34,7 +34,7 @@
                 <div class="user-info d-flex align-items-center">
                   <img :src="userInfo.fileInfo ? userInfo.fileInfo.fileUrl : profileImage" alt="Avatar" class="avatar" />
                   <span class="ml-2" data-bs-toggle="dropdown">
-                    {{ userInfo.name }}
+                    {{ userInfo.rank.position.name}}-{{ userInfo.name }}
                     <i class="ms-2 bi bi-caret-down-square-fill dropdown"></i>
                   </span>
                   <ul class="dropdown-menu">
