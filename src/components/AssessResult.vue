@@ -19,6 +19,9 @@
                 <div class="line">
                   <strong>Dự án hiện tại:</strong> {{ userInfo.userProjects[0].name }}
                 </div>
+                <div class="line">
+            <strong>Bộ phận:</strong> {{ departmentName }}
+          </div>
               </div>
             </div>
             <div class="total-score d-flex flex-column font-weight-bold justify-content-end gap-2">
@@ -83,6 +86,7 @@
 <script>
 // import RadarChart from "./RadarChart.vue";
 import AssessService from "@/services/AssessService";
+import AuthService from "@/services/AuthService";
 export default {
   name: "AssessResult",
   components: {
@@ -110,6 +114,7 @@ export default {
       managerCriteriaScores: [],
       averageTeamPoint: 0,
       managerPoint: 0,
+      departmentName:"",
       defaultAvatar:
         "https://png.pngtree.com/png-clipart/20231216/original/pngtree-vector-office-worker-staff-avatar-employee-icon-png-image_13863941.png",
       selfCriterias: [],
@@ -124,8 +129,12 @@ export default {
   },
   mounted() {
     this.getTypeAssess();
+    this.loadDepartment();
   },
   methods: {
+    async loadDepartment() {
+    this.departmentName = await this.currentDepartment();
+  },
     async getTypeAssess() {
       await AssessService.fetchTypeAssessByUserId(this.userInfo.id)
 
@@ -273,6 +282,21 @@ export default {
         console.log("NOTE:: ", this.note);
       } else {
         this.note = "Chưa có kết quả đánh giá từ phía quản lý, vui lòng đợi...";
+      }
+    },
+    async currentDepartment() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("User ID:", user.id);
+      
+      try {
+        const department = await AuthService.fecthUserById(user.id);
+        console.log("Department Data:", department);
+        const departmentName = department.data?.userProjects[0]?.department?.name;
+        console.log("Department Name:", departmentName);
+        return departmentName || "Chưa xác định";  // Trả về tên phòng ban nếu có, nếu không thì trả về mặc định
+      } catch (error) {
+        console.error("Error fetching department:", error);
+        return "Chưa xác định";  // Nếu có lỗi thì trả về giá trị mặc định
       }
     }
 

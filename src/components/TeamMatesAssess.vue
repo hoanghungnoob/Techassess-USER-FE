@@ -18,9 +18,9 @@
           <div class="line">
             <strong>Dự án hiện tại:</strong> {{ profile.userProjects[0].name }}
           </div>
-          <!-- <div class="line">
-            <strong>Thời gian làm việc:</strong> {{ calculateWorkTime() }}
-          </div> -->
+          <div class="line">
+            <strong>Bộ phận:</strong> {{ departmentName }}
+          </div>
         </div>
       </div>
       <div class="team-mate">
@@ -96,6 +96,7 @@ import UserService from "@/services/UserService.js";
 import { toast } from "vue3-toastify";
 import AssessService from "@/services/AssessService";
 import ProjectService from "@/services/ProjectService";
+import AuthService from "@/services/AuthService";
 
 export default {
   name: "TeamMatesAssess",
@@ -116,6 +117,7 @@ export default {
       listScore: [],
       isAssess: false,
       assessDetails: [],
+      departmentName:"",
       defaultImage:
         "https://png.pngtree.com/png-clipart/20231216/original/pngtree-vector-office-worker-staff-avatar-employee-icon-png-image_13863941.png",
     };
@@ -127,6 +129,7 @@ export default {
     }
     this.fetchTeamMates();
     this.fetchAssessByUser();
+    this.loadDepartment();
   },
   computed: {
     sortedTeamMates() {
@@ -142,6 +145,9 @@ export default {
     },
   },
   methods: {
+    async loadDepartment() {
+    this.departmentName = await this.currentDepartment();
+  },
     checkRole(role) {
       return this.userInfo.userRoles.some(
         (usRole) => usRole.role.name === role
@@ -351,6 +357,23 @@ export default {
         this.teamMates[index] = updatedPerson;
       }
     },
+    async currentDepartment() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("User ID:", user.id);
+      
+      try {
+        const department = await AuthService.fecthUserById(user.id);
+        console.log("Department Data:", department);
+        const departmentName = department.data?.userProjects[0]?.department?.name;
+        console.log("Department Name:", departmentName);
+        return departmentName || "Chưa xác định";  // Trả về tên phòng ban nếu có, nếu không thì trả về mặc định
+      } catch (error) {
+        console.error("Error fetching department:", error);
+        return "Chưa xác định";  // Nếu có lỗi thì trả về giá trị mặc định
+      }
+    }
+
+
   },
 };
 </script>
