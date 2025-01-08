@@ -123,11 +123,7 @@
           </div>
         </div>
       </div>
-      <!-- Sửa ở đây v-else -->
-
     </div>
-
-    <!-- Submit Button -->
     <div class="d-flex justify-content-end">
       <button :disabled="isLoading" class="btn btn-primary" type="submit">Gửi Đánh Giá</button>
     </div>
@@ -147,9 +143,6 @@ export default {
   emits: ["updateSelectedPerson"],
   data() {
     return {
-      //Thêm
-      // listCriteria: [],
-      // perfValues: null,
       listAssess: [],
       assessDetail: {},
       result: {
@@ -181,7 +174,6 @@ export default {
     this.loadCriteria();
   },
   watch: {
-    // xem description của từng ô nếu thay đổi thì cập nhật lên localStorage
     perfValues: {
       handler() {
         localStorage.setItem("assessDetails", JSON.stringify(this.perfValues));
@@ -196,7 +188,6 @@ export default {
       },
       immediate: true,
     },
-    // Thêm 
     selectedPerson: {
       immediate: true,
       handler() {
@@ -241,8 +232,6 @@ export default {
     },
     initPerfValues() {
       this.perfValues.assessDetails = [];
-
-      // Khởi tạo assessDetails dựa trên số lượng tiêu chí và câu hỏi
       const criteriaCount = this.listCriteria.length; // Số lượng tiêu chí
 
       for (let i = 0; i < criteriaCount; i++) {
@@ -288,7 +277,6 @@ export default {
       let userPosition = this.userInfo.rank.position.name;
       let userID = this.userInfo.id;
 
-      // Kiểm tra vai trò quản lý và số lượng bản ghi
       if (userPosition === "LEADER") {
         try {
           const numberOfUserInTeam = await UserService.fetchTeamsByUserId(
@@ -296,7 +284,6 @@ export default {
           );
           console.log(numberOfUserInTeam.data.length);
 
-          //user id này phải là user id của người được đánh giá
           const recordCheckRes = await AssessService.fetchAssessOfUser(
             this.selectedPerson.id
           );
@@ -323,15 +310,12 @@ export default {
           return;
         }
       }
-      //xử lý form
       this.perfValues.assessDetails.forEach((detail) => {
         const isCriteriaToCheck = detail.questionId !== null;
-        // Kiểm tra xem giá trị đã được chọn hay chưa
         if (isCriteriaToCheck && (!detail.value || detail.value === 0)) {
           allValuesSelected = false;
         }
 
-        // Kiểm tra mô tả nếu có giá trị
         if (detail.value >= 4 && isCriteriaToCheck) {
           const isDescriptionFilled =
             detail.description && detail.description.trim() !== "";
@@ -461,11 +445,9 @@ export default {
       questionIndex,
       value
     ) {
-      // Giả sử bạn đã khởi tạo perfValues.assessDetails trước đó
       if (!this.perfValues.assessDetails) {
         this.perfValues.assessDetails = [];
 
-        // Khởi tạo assessDetails dựa trên số lượng tiêu chí và câu hỏi
         const criteriaCount = this.listCriteria.length; // Số lượng tiêu chí
 
         for (let i = 0; i < criteriaCount; i++) {
@@ -484,45 +466,37 @@ export default {
         }
       }
 
-      // Tìm đối tượng assessDetail tương ứng
       const assessDetail = this.perfValues.assessDetails.find(
         (detail) =>
           detail.criteriaId === criteriaId && detail.questionId === questionId
       );
 
-      // Cập nhật giá trị đã chọn cho câu hỏi
       if (assessDetail) {
         assessDetail.value = value;
 
-        // Xóa ô nhập "description" nếu giá trị < 4
         if (value < 4) {
           assessDetail.description = null; // Hoặc "" tùy thuộc vào yêu cầu
         }
       }
 
-      // Cập nhật listScore để hiển thị
       if (!this.listScore[criteriaIndex]) {
         this.listScore[criteriaIndex] = {};
       }
 
-      // Tính toán điểm mới cho câu hỏi
       const newScore = this.calculateScoreSelected(
         criteriaIndex,
         questionIndex,
         value
       );
 
-      // Cập nhật điểm cho câu hỏi
       this.listScore[criteriaIndex][questionIndex] = newScore;
 
-      // Kiểm tra xem tất cả câu hỏi của tiêu chí này đã được trả lời chưa
       const questionsCount =
         this.listCriteria[criteriaIndex]?.questions?.length || 0;
       const answeredQuestionsCount = Object.keys(
         this.listScore[criteriaIndex]
       ).filter((key) => key !== "totalOfCriteria").length;
 
-      // Tính lại totalOfCriteria khi có sự thay đổi
       if (answeredQuestionsCount === questionsCount) {
         const totalOfCriteria = this.calculateTotalOfCriteria(criteriaIndex);
         const percentage = Math.round(
@@ -530,18 +504,14 @@ export default {
           (this.listCriteria[criteriaIndex]?.point || 1)
         );
 
-        // Cập nhật tổng điểm tiêu chí
         this.listScore[criteriaIndex].totalOfCriteria = percentage;
       }
 
-      // Cập nhật tổng điểm cho tất cả các tiêu chí
       this.updateTotalPoint();
 
-      // Lưu assessDetails vào localStorage
       localStorage.setItem("assessDetails", JSON.stringify(this.perfValues));
     },
     calculateScoreSelected(criteriaIndex, questionIndex, value) {
-      // Lấy thông tin câu hỏi tương ứng từ listCriteria
       const question =
         this.listCriteria[criteriaIndex]?.questions[questionIndex];
       const pointCriteria =
@@ -549,10 +519,8 @@ export default {
       const questionScore = parseFloat(question?.point) || 0; // Điểm của câu hỏi
       const selectedValue = parseFloat(value) || 0; // Giá trị được chọn
 
-      // Tính toán điểm cho câu hỏi này
       const score = (questionScore / pointCriteria) * selectedValue;
 
-      // Làm tròn điểm đến 2 chữ số sau dấu phẩy
       return Math.round(score * 100) / 100;
     },
     calculateTotalOfCriteria(criteriaIndex) {
