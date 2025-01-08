@@ -55,8 +55,9 @@
         </div>
       </div>
       <div v-else class="spandes text-start">
-        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []" :key="index">
-          {{answer.fromUserName?answer.fromUserName + ": " : "" }} {{ answer.description }}<br> 
+        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []"
+          :key="index">
+          {{ answer.fromUserName ? answer.fromUserName + ": " : "Leader: " }} {{ answer.description }}<br>
         </span>
       </div>
     </div>
@@ -97,6 +98,14 @@ export default {
           this.fetchAssessOfUserId(this.selectedPerson.id);
         }
       },
+    },
+    'selectedPerson.userProjects.0.id': {
+      handler(newValue) {
+        if (newValue) {
+          this.loadCriteria();
+        }
+      },
+      immediate: true,
     },
   },
   mounted() {
@@ -277,7 +286,8 @@ export default {
     },
     async loadCriteria() {
       try {
-        const res = await AssessService.fetchListData();
+        const projectId = this.selectedPerson.userProjects[0].id;
+        const res = await AssessService.fetchListData(projectId);
         if (res.code === 1010) {
           this.listCriteria = res.data;
         }
@@ -384,7 +394,7 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 
-.table > table {
+.table>table {
   width: 100%;
   margin-bottom: 1rem;
   border-collapse: collapse;
@@ -437,7 +447,7 @@ export default {
   padding-left: 20px;
 }
 
-.content > p {
+.content>p {
   color: black;
 }
 
@@ -637,6 +647,7 @@ export default {
 
 /* Đối với màn hình trung bình (máy tính bảng) */
 @media (min-width: 576px) and (max-width: 768px) {
+
   .left-menu,
   .right-menu {
     height: auto;
