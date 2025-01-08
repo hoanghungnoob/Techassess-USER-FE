@@ -2,8 +2,9 @@
   <div class="container-fluid row justify-content-md-center align-items-center" v-if="profile">
     <!-- Left Menu -->
     <div
-      :class="['left-menu p-3 d-flex flex-column', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER' ) && !firstUnsubmitted ? 'col-md-8' : 'col-md-4']">
-      <div :class="['profile mb-3 d-flex align-items-center justify-content-around', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER' ) && !firstUnsubmitted ? 'd-none' : 'd-flex']">
+      :class="['left-menu p-3 d-flex flex-column', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted ? 'col-md-8' : 'col-md-4']">
+      <div
+        :class="['profile mb-3 d-flex align-items-center justify-content-around', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted ? 'd-none' : 'd-flex']">
         <div class="avatar">
           <img :src="profile.fileInfo ? profile.fileInfo.fileUrl : defaultImage" alt="avatar" />
         </div>
@@ -45,13 +46,15 @@
               <td>{{ mate?.rank?.position.name }}</td>
               <td class="d-flex justify-content-center">
                 <div class="d-flex">
-                  <button v-if="mate.isSubmitted" class="btn btn-sm btn-success btn-custom me-2" :disabled="true">
+                  <button v-if="mate.isSubmitted && !checkRole('MANAGER')"
+                    class="btn btn-sm btn-success btn-custom me-2" :disabled="true">
                     Đã đánh giá
                   </button>
                   <button v-else-if="mate.isProcessing" class="btn btn-sm btn-warning btn-custom me-2" :disabled="true">
                     Đang đánh giá
                   </button>
-                  <button v-else class="btn btn-sm btn-primary btn-custom me-2" @click="selectPerson(mate)">
+                  <button v-else-if="!mate.isSubmitted" class="btn btn-sm btn-primary btn-custom me-2"
+                    @click="selectPerson(mate)">
                     Đánh giá
                   </button>
                 </div>
@@ -82,7 +85,8 @@
     </div>
 
     <!-- Right Menu -->
-    <div :class="['col-md-8 right-menu p-4', { 'd-none': !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted}, {'d-flex': userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER')}]">
+    <div
+      :class="['col-md-8 right-menu p-4', { 'd-none': !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted }, { 'd-flex': userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') }]">
       <component :is="isViewing ? 'TeamAssessDetailsForm' : 'TeamAssessForm'" :selectedPerson="selectedPerson"
         :userInfo="userInfo" @updateSelectedPerson="handleUpdateSelectedPerson" />
     </div>
@@ -163,8 +167,8 @@ export default {
         console.error("Error fetching assessments:: ", error);
       }
     },
-  
-    
+
+
 
     async fetchTeamMates() {
       try {
@@ -219,11 +223,18 @@ export default {
           firstUnsubmitted.isProcessing = true;
           this.selectedPerson = firstUnsubmitted;
           this.profile = firstUnsubmitted;
+          this.isViewing = false;
         } else {
           // Check thêm nếu role là user bình thường thì ẩn 
           // Check role là manager thì vẫn cho hiện cái firstUnsubmitted
           this.profile = this.teamMates[0];
+          this.selectedPerson = this.teamMates[0];
           this.firstUnsubmitted = null;
+          this.isViewing = true;
+
+          // Đặt isViewing của người đầu tiên thành true, các người khác là false
+          this.teamMates.forEach(member => member.isViewing = false);
+          this.teamMates[0].isViewing = true;
         }
       } catch (error) {
         console.error("Error fetching team members:", error);
@@ -261,6 +272,15 @@ export default {
       } else {
         person.isViewing = !person.isViewing;
       }
+      // Đặt tất cả trạng thái isViewing của teamMates thành false
+      this.teamMates.forEach(member => (member.isViewing = false));
+
+      // Đánh dấu thành viên được chọn là đang xem
+      person.isViewing = true;
+
+      // Cập nhật thông tin hiển thị
+      this.selectedPerson = person;
+      this.profile = person;
       this.isViewing = true;
     },
     selectPerson(person) {

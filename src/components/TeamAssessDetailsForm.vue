@@ -55,8 +55,9 @@
         </div>
       </div>
       <div v-else class="spandes text-start">
-        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []" :key="index">
-          {{answer.fromUserName?answer.fromUserName + ": " : "" }} {{ answer.description }}<br> 
+        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []"
+          :key="index">
+          {{ answer.fromUserName ? answer.fromUserName + ": " : "Leader: " }} {{ answer.description }}<br>
         </span>
       </div>
     </div>
@@ -393,7 +394,7 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 
-.table > table {
+.table>table {
   width: 100%;
   margin-bottom: 1rem;
   border-collapse: collapse;
@@ -446,7 +447,7 @@ export default {
   padding-left: 20px;
 }
 
-.content > p {
+.content>p {
   color: black;
 }
 
@@ -646,6 +647,7 @@ export default {
 
 /* Đối với màn hình trung bình (máy tính bảng) */
 @media (min-width: 576px) and (max-width: 768px) {
+
   .left-menu,
   .right-menu {
     height: auto;
