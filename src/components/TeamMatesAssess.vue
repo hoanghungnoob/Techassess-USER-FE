@@ -2,8 +2,9 @@
   <div class="container-fluid row justify-content-md-center align-items-center" v-if="profile">
     <!-- Left Menu -->
     <div
-      :class="['left-menu p-3 d-flex flex-column', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER' ) && !firstUnsubmitted ? 'col-md-8' : 'col-md-4']">
-      <div :class="['profile mb-3 d-flex align-items-center justify-content-around', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER' ) && !firstUnsubmitted ? 'd-none' : 'd-flex']">
+      :class="['left-menu p-3 d-flex flex-column', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted ? 'col-md-8' : 'col-md-4']">
+      <div
+        :class="['profile mb-3 d-flex align-items-center justify-content-around', !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted ? 'd-none' : 'd-flex']">
         <div class="avatar">
           <img :src="profile.fileInfo ? profile.fileInfo.fileUrl : defaultImage" alt="avatar" />
         </div>
@@ -18,9 +19,9 @@
           <div class="line">
             <strong>Dự án hiện tại:</strong> {{ profile.userProjects[0].name }}
           </div>
-          <!-- <div class="line">
-            <strong>Thời gian làm việc:</strong> {{ calculateWorkTime() }}
-          </div> -->
+          <div class="line">
+            <strong>Bộ phận:</strong> {{ departmentName }}
+          </div>
         </div>
       </div>
       <div class="team-mate">
@@ -45,21 +46,24 @@
               <td>{{ mate?.rank?.position.name }}</td>
               <td class="d-flex justify-content-center">
                 <div class="d-flex">
-                  <button v-if="mate.isSubmitted" class="btn btn-sm btn-success btn-custom me-2" :disabled="true">
+                  <button v-if="mate.isSubmitted && !checkRole('MANAGER')"
+                    class="btn btn-sm btn-success btn-custom " :disabled="true">
                     Đã đánh giá
                   </button>
-                  <button v-else-if="mate.isProcessing" class="btn btn-sm btn-warning btn-custom me-2" :disabled="true">
+                  <button v-else-if="mate.isProcessing" class="btn btn-sm btn-warning btn-custom " :disabled="true">
                     Đang đánh giá
                   </button>
-                  <button v-else class="btn btn-sm btn-primary btn-custom me-2" @click="selectPerson(mate)">
+                  <button v-else-if="!mate.isSubmitted" class="btn btn-sm btn-primary btn-custom "
+                    @click="selectPerson(mate)">
                     Đánh giá
                   </button>
                 </div>
-                <div v-if="checkRole('MANAGER')" class="ms-3">
+                <div v-if="checkRole('MANAGER')">
                   <button v-if="mate.isViewing" class="btn btn-sm btn-warning btn-custom" :disabled="true">
                     Đang xem
                   </button>
-                  <button v-else class="btn btn-sm btn-info btn-custom" @click="viewPerson(mate)">
+                  <button v-if="mate.isSubmitted && !mate.isViewing" class="btn btn-sm btn-info btn-custom"
+                    @click="viewPerson(mate)">
                     Xem chi tiết
                   </button>
                 </div>
@@ -82,7 +86,8 @@
     </div>
 
     <!-- Right Menu -->
-    <div :class="['col-md-8 right-menu p-4', { 'd-none': !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted}, {'d-flex': userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER')}]">
+    <div
+      :class="['col-md-8 right-menu p-4', { 'd-none': !userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') && !firstUnsubmitted }, { 'd-flex': userInfo.userRoles.some(role => role.role.id === 3 && role.role.name === 'MANAGER') }]">
       <component :is="isViewing ? 'TeamAssessDetailsForm' : 'TeamAssessForm'" :selectedPerson="selectedPerson"
         :userInfo="userInfo" @updateSelectedPerson="handleUpdateSelectedPerson" />
     </div>
@@ -96,6 +101,7 @@ import UserService from "@/services/UserService.js";
 import { toast } from "vue3-toastify";
 import AssessService from "@/services/AssessService";
 import ProjectService from "@/services/ProjectService";
+import AuthService from "@/services/AuthService";
 
 export default {
   name: "TeamMatesAssess",
@@ -116,6 +122,7 @@ export default {
       listScore: [],
       isAssess: false,
       assessDetails: [],
+      departmentName:"",
       defaultImage:
         "https://png.pngtree.com/png-clipart/20231216/original/pngtree-vector-office-worker-staff-avatar-employee-icon-png-image_13863941.png",
     };
@@ -127,6 +134,7 @@ export default {
     }
     this.fetchTeamMates();
     this.fetchAssessByUser();
+    this.loadDepartment();
   },
   computed: {
     sortedTeamMates() {
@@ -142,6 +150,9 @@ export default {
     },
   },
   methods: {
+    async loadDepartment() {
+    this.departmentName = await this.currentDepartment();
+  },
     checkRole(role) {
       return this.userInfo.userRoles.some(
         (usRole) => usRole.role.name === role
@@ -163,8 +174,8 @@ export default {
         console.error("Error fetching assessments:: ", error);
       }
     },
-  
-    
+
+
 
     async fetchTeamMates() {
       try {
@@ -219,11 +230,18 @@ export default {
           firstUnsubmitted.isProcessing = true;
           this.selectedPerson = firstUnsubmitted;
           this.profile = firstUnsubmitted;
+          this.isViewing = false;
         } else {
           // Check thêm nếu role là user bình thường thì ẩn 
           // Check role là manager thì vẫn cho hiện cái firstUnsubmitted
           this.profile = this.teamMates[0];
+          this.selectedPerson = this.teamMates[0];
           this.firstUnsubmitted = null;
+          this.isViewing = true;
+
+          // Đặt isViewing của người đầu tiên thành true, các người khác là false
+          this.teamMates.forEach(member => member.isViewing = false);
+          this.teamMates[0].isViewing = true;
         }
       } catch (error) {
         console.error("Error fetching team members:", error);
@@ -261,6 +279,15 @@ export default {
       } else {
         person.isViewing = !person.isViewing;
       }
+      // Đặt tất cả trạng thái isViewing của teamMates thành false
+      this.teamMates.forEach(member => (member.isViewing = false));
+
+      // Đánh dấu thành viên được chọn là đang xem
+      person.isViewing = true;
+
+      // Cập nhật thông tin hiển thị
+      this.selectedPerson = person;
+      this.profile = person;
       this.isViewing = true;
     },
     selectPerson(person) {
@@ -351,6 +378,23 @@ export default {
         this.teamMates[index] = updatedPerson;
       }
     },
+    async currentDepartment() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("User ID:", user.id);
+      
+      try {
+        const department = await AuthService.fecthUserById(user.id);
+        console.log("Department Data:", department);
+        const departmentName = department.data?.userProjects[0]?.department?.name;
+        console.log("Department Name:", departmentName);
+        return departmentName || "Chưa xác định";  // Trả về tên phòng ban nếu có, nếu không thì trả về mặc định
+      } catch (error) {
+        console.error("Error fetching department:", error);
+        return "Chưa xác định";  // Nếu có lỗi thì trả về giá trị mặc định
+      }
+    }
+
+
   },
 };
 </script>

@@ -53,6 +53,18 @@ const AuthService = {
         const accessToken = localStorage.getItem("accessToken");
         return !!accessToken;
     },
+    fecthUserById: async (id)=>{
+        try {
+            const response = await axios.get(`${InfoUrl}/api/users/${id}`);
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                return error.response.data;
+            } else {
+                return { message: "Lỗi kết nối đến máy chủ" };
+            }
+        }
+    }
 };
 
 export default AuthService;

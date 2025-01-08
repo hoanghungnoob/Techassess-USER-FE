@@ -17,9 +17,9 @@
           <div class="line">
             <strong>Dự án hiện tại:</strong> {{ userInfo.userProjects[0].name }}
           </div>
-          <!-- <div class="line">
-            <strong>Thời gian làm việc:</strong> {{ calculateWorkTime() }}
-          </div> -->
+          <div class="line">
+            <strong>Bộ phận:</strong> {{ departmentName }}
+          </div>
         </div>
       </div>
       <h4 v-if="isAssess" class="text-success">
@@ -187,6 +187,7 @@
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import AssessService from "@/services/AssessService";
+import AuthService from "@/services/AuthService";
 
 export default {
   name: "TeamMatesAssess",
@@ -203,6 +204,7 @@ export default {
       sortKey: "name",
       sortOrder: "asc",
       totalPoint: 0,
+      departmentName:"",
     };
   },
   created() {
@@ -212,6 +214,7 @@ export default {
     }
     this.loadCriteria();
     this.loadMyAssess();
+    this.loadDepartment();
   },
   watch: {
     // xem description của từng ô nếu thay đổi thì cập nhật lên localStorage
@@ -228,6 +231,9 @@ export default {
     };
   },
   methods: {
+    async loadDepartment() {
+    this.departmentName = await this.currentDepartment();
+  },
     checkValue(questionId, answerValue) {
       const detail = this.personalAssessDetails.find(
         (detail) => detail.question.id === questionId
@@ -582,6 +588,22 @@ export default {
         0
       );
     },
+    async currentDepartment() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("User ID:", user.id);
+      
+      try {
+        const department = await AuthService.fecthUserById(user.id);
+        console.log("Department Data:", department);
+        const departmentName = department.data?.userProjects[0]?.department?.name;
+        console.log("Department Name:", departmentName);
+        return departmentName || "Chưa xác định";  // Trả về tên phòng ban nếu có, nếu không thì trả về mặc định
+      } catch (error) {
+        console.error("Error fetching department:", error);
+        return "Chưa xác định";  // Nếu có lỗi thì trả về giá trị mặc định
+      }
+    }
+
   },
 };
 </script>
