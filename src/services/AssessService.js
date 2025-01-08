@@ -33,10 +33,10 @@ const AssessService = {
             console.error("Lỗi khi gửi yêu cầu:", error);
         }
     },
-    fetchListData: async() => {
+    fetchListData: async(projectId) => {
         try {
             const accessToken = localStorage.getItem("accessToken");
-            const response = await axios.get(`${InfoUrl}/api/criterias`, {
+            const response = await axios.get(`${InfoUrl}/api/criterias/${projectId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
