@@ -47,22 +47,23 @@
               <td class="d-flex justify-content-center">
                 <div class="d-flex">
                   <button v-if="mate.isSubmitted && !checkRole('MANAGER')"
-                    class="btn btn-sm btn-success btn-custom me-2" :disabled="true">
+                    class="btn btn-sm btn-success btn-custom " :disabled="true">
                     Đã đánh giá
                   </button>
-                  <button v-else-if="mate.isProcessing" class="btn btn-sm btn-warning btn-custom me-2" :disabled="true">
+                  <button v-else-if="mate.isProcessing" class="btn btn-sm btn-warning btn-custom " :disabled="true">
                     Đang đánh giá
                   </button>
-                  <button v-else-if="!mate.isSubmitted" class="btn btn-sm btn-primary btn-custom me-2"
+                  <button v-else-if="!mate.isSubmitted" class="btn btn-sm btn-primary btn-custom "
                     @click="selectPerson(mate)">
                     Đánh giá
                   </button>
                 </div>
-                <div v-if="checkRole('MANAGER')" class="ms-3">
+                <div v-if="checkRole('MANAGER')">
                   <button v-if="mate.isViewing" class="btn btn-sm btn-warning btn-custom" :disabled="true">
                     Đang xem
                   </button>
-                  <button v-else class="btn btn-sm btn-info btn-custom" @click="viewPerson(mate)">
+                  <button v-if="mate.isSubmitted && !mate.isViewing" class="btn btn-sm btn-info btn-custom"
+                    @click="viewPerson(mate)">
                     Xem chi tiết
                   </button>
                 </div>
