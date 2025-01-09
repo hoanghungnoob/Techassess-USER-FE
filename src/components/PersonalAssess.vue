@@ -1,10 +1,18 @@
 <template>
-  <div class="container-fluid row justify-content-md-center align-items-center" v-if="userInfo">
+  <div
+    class="container-fluid row justify-content-md-center align-items-center"
+    v-if="userInfo"
+  >
     <!-- Left Menu -->
     <div class="col-md-4 left-menu p-3">
-      <div class="profile mb-3 d-flex align-items-center justify-content-around">
+      <div
+        class="profile mb-3 d-flex align-items-center justify-content-around"
+      >
         <div class="avatar">
-          <img :src="userInfo.fileInfo ? userInfo.fileInfo.fileUrl : profileImage" alt="avatar" />
+          <img
+            :src="userInfo.fileInfo ? userInfo.fileInfo.fileUrl : profileImage"
+            alt="avatar"
+          />
         </div>
         <div class="info ms-3 text-start">
           <h3 class="mb-2">{{ userInfo.name }}</h3>
@@ -17,23 +25,24 @@
           <div class="line">
             <strong>Dự án hiện tại:</strong> {{ userInfo.userProjects[0].name }}
           </div>
-          <div class="line">
-            <strong>Bộ phận:</strong> {{ departmentName }}
-          </div>
+          <div class="line"><strong>Bộ phận:</strong> {{ departmentName }}</div>
         </div>
       </div>
-      <h4 v-if="isAssess" class="text-success">
-        Bạn đã đánh giá cho bản thân
-      </h4>
+      <h4 v-if="isAssess" class="text-success">Bạn đã đánh giá cho bản thân</h4>
     </div>
 
     <!-- Right Menu -->
     <div class="col-md-8 right-menu p-4">
       <!-- Evaluation Header -->
-      <div class="evaluation-header text-start mb-2 d-flex justify-content-between">
-        <label class="fw-bold fs-4">Đánh giá quý III năm 2024 cho bản thân</label>
+      <div
+        class="evaluation-header text-start mb-2 d-flex justify-content-between"
+      >
+        <label class="fw-bold fs-4"
+          >Đánh giá quý III năm 2024 cho bản thân</label
+        >
         <div class="d-flex">
-          <label class="fw-bold fs-4">Tổng điểm:
+          <label class="fw-bold fs-4"
+            >Tổng điểm:
             <span v-if="isViewing == true" class="text-danger">{{
               this.personalAssess.totalPoint
                 ? this.personalAssess.totalPoint
@@ -50,7 +59,11 @@
       <!-- @submit.prevent="submit" -->
       <form class="evaluation-form" @submit.prevent="submitForm">
         <!-- Performance Evaluation -->
-        <div v-for="(criteria, criteriaIndex) in listCriteria" :key="criteria.id" class="section mb-4">
+        <div
+          v-for="(criteria, criteriaIndex) in listCriteria"
+          :key="criteria.id"
+          class="section mb-4"
+        >
           <div class="d-flex justify-content-between">
             <label class="d-flex gap-2">
               <h5>{{ criteria.title }}</h5>
@@ -66,21 +79,42 @@
             </div>
           </div>
           <div v-if="criteria.questions && criteria.questions.length > 0">
-            <div v-for="(question, questionIndex) in criteria.questions" :key="question.id" class="question mb-3">
-              <div class="d-flex justify-content-between title" v-if="question.title">
+            <div
+              v-for="(question, questionIndex) in criteria.questions"
+              :key="question.id"
+              class="question mb-3"
+            >
+              <div
+                class="d-flex justify-content-between title"
+                v-if="question.title"
+              >
                 <label>
                   {{ questionIndex + 1 }}. {{ question.title }}
                   <span class="text-danger"> *</span>
                 </label>
               </div>
 
-              <div v-if="question.answers" class="options d-flex justify-content-around my-3">
-                <div v-for="(answer, answerIndex) in question.answers" :key="answer.id" class="form-check">
-                  <input v-if="!isAssess" type="radio" :id="'performanceOption' +
-                    criteriaIndex +
-                    questionIndex +
-                    answerIndex
-                    " :name="'performance' + criteriaIndex + questionIndex" class="form-check-input" @change="
+              <div
+                v-if="question.answers"
+                class="options d-flex justify-content-around my-3"
+              >
+                <div
+                  v-for="(answer, answerIndex) in question.answers"
+                  :key="answer.id"
+                  class="form-check"
+                >
+                  <input
+                    v-if="!isAssess"
+                    type="radio"
+                    :id="
+                      'performanceOption' +
+                      criteriaIndex +
+                      questionIndex +
+                      answerIndex
+                    "
+                    :name="'performance' + criteriaIndex + questionIndex"
+                    class="form-check-input"
+                    @change="
                       selectPerformanceValue(
                         criteria.id,
                         criteriaIndex,
@@ -88,20 +122,33 @@
                         questionIndex,
                         answer.value
                       )
-                      " :value="answer.value" />
+                    "
+                    :value="answer.value"
+                  />
 
-                  <input v-else type="radio" :id="'performanceOption' +
-                    criteriaIndex +
-                    questionIndex +
-                    answerIndex
-                    " :name="'performance' + criteriaIndex + questionIndex" class="form-check-input"
+                  <input
+                    v-else
+                    type="radio"
+                    :id="
+                      'performanceOption' +
+                      criteriaIndex +
+                      questionIndex +
+                      answerIndex
+                    "
+                    :name="'performance' + criteriaIndex + questionIndex"
+                    class="form-check-input"
                     :checked="checkValue(question.id, answer.value)"
-                    :disabled="!checkValue(question.id, answer.value)" />
-                  <label :for="'performanceOption' +
-                    criteriaIndex +
-                    questionIndex +
-                    answerIndex
-                    " class="form-check-label">
+                    :disabled="!checkValue(question.id, answer.value)"
+                  />
+                  <label
+                    :for="
+                      'performanceOption' +
+                      criteriaIndex +
+                      questionIndex +
+                      answerIndex
+                    "
+                    class="form-check-label"
+                  >
                     {{ answer.title }}
                   </label>
                 </div>
@@ -119,56 +166,94 @@
                 </div>
               </div> -->
               <div v-if="isAssess" class="description">
-                <textarea v-if="personalAssessDetails?.find(
-                  detail => detail.criteria.id === criteria.id &&
-                    detail.question.id === question.id &&
-                    detail.description !== null
-                )" class="form-control" :class="{
-                  'error-textarea': perfValues.assessDetails?.find(
-                    (detail) => detail.criteriaId === criteria.id
-                  )?.hasError,
-                }" rows="2" :value="personalAssessDetails?.find(
-                  (detail) => detail.criteria.id === criteria.id && detail.question.id === question.id
-                )?.description || ''
-                  " readonly>
+                <textarea
+                  v-if="
+                    personalAssessDetails?.find(
+                      (detail) =>
+                        detail.criteria.id === criteria.id &&
+                        detail.question.id === question.id &&
+                        detail.description !== null
+                    )
+                  "
+                  class="form-control"
+                  :class="{
+                    'error-textarea': perfValues.assessDetails?.find(
+                      (detail) => detail.criteriaId === criteria.id
+                    )?.hasError,
+                  }"
+                  rows="2"
+                  :value="
+                    personalAssessDetails?.find(
+                      (detail) =>
+                        detail.criteria.id === criteria.id &&
+                        detail.question.id === question.id
+                    )?.description || ''
+                  "
+                  readonly
+                >
                 </textarea>
               </div>
 
               <div v-else class="description">
-                <textarea v-if="isShowDescription(criteria.id, question.id)" class="form-control" :class="{
-                  'error-textarea': perfValues.assessDetails.find(
-                    (detail) =>
-                      detail.criteriaId === criteria.id &&
-                      detail.questionId === question.id
-                  ).hasError,
-                }" rows="2" placeholder="Nhận xét thêm" v-model="perfValues.assessDetails.find(
-                  (detail) =>
-                    detail.criteriaId === criteria.id &&
-                    detail.questionId === question.id
-                ).description
-                  " :ref="'description_' + criteria.id + '_' + question.id"></textarea>
+                <textarea
+                  v-if="isShowDescription(criteria.id, question.id)"
+                  class="form-control"
+                  :class="{
+                    'error-textarea': perfValues.assessDetails.find(
+                      (detail) =>
+                        detail.criteriaId === criteria.id &&
+                        detail.questionId === question.id
+                    ).hasError,
+                  }"
+                  rows="2"
+                  placeholder="Nhận xét thêm"
+                  v-model="
+                    perfValues.assessDetails.find(
+                      (detail) =>
+                        detail.criteriaId === criteria.id &&
+                        detail.questionId === question.id
+                    ).description
+                  "
+                  :ref="'description_' + criteria.id + '_' + question.id"
+                ></textarea>
               </div>
             </div>
           </div>
           <div v-else>
             <div class="form-group">
-              <textarea v-if="!isAssess" class="form-control" :class="{
-                'error-textarea': perfValues.assessDetails?.find(
-                  (detail) => detail.criteriaId === criteria.id
-                )?.hasError,
-              }" rows="2" :value="perfValues.assessDetails?.find(
-                (detail) => detail.criteriaId === criteria.id
-              )?.description || ''
-                " @input="updateDescription(criteria.id, $event.target.value)"
-                placeholder="Nhập nội dung..."></textarea>
-              <textarea v-else class="form-control" :class="{
-                'error-textarea': perfValues.assessDetails?.find(
-                  (detail) => detail.criteriaId === criteria.id
-                )?.hasError,
-              }" rows="2" :value="personalAssessDetails?.find(
-                (detail) => detail.criteria.id === criteria.id
-              )?.description || ''
-                " readonly></textarea>
+              <textarea
+                v-if="!isAssess"
+                class="form-control"
+                :class="{
+                  'error-textarea': perfValues.assessDetails?.find(
+                    (detail) => detail.criteriaId === criteria.id
+                  )?.hasError,
+                }"
+                rows="2"
+                :value="
+                  perfValues.assessDetails?.find(
+                    (detail) => detail.criteriaId === criteria.id
+                  )?.description || ''
+                "
+                @input="updateDescription(criteria.id, $event.target.value)"
+                placeholder="Nhập nội dung..."
+              ></textarea>
+              <textarea
+                v-else
+                class="form-control"
+                :class="{
+                  'error-textarea': perfValues.assessDetails?.find(
+                    (detail) => detail.criteriaId === criteria.id
+                  )?.hasError,
+                }"
+                rows="2"
+                :value="
+                  personalAssessDetails?.find(
+                    (detail) => detail.criteria.id === criteria.id
+                  )?.description || ''
+                "
+                readonly
+              ></textarea>
             </div>
           </div>
         </div>
@@ -187,7 +272,6 @@
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import AssessService from "@/services/AssessService";
-import AuthService from "@/services/AuthService";
 
 export default {
   name: "TeamMatesAssess",
@@ -204,7 +288,7 @@ export default {
       sortKey: "name",
       sortOrder: "asc",
       totalPoint: 0,
-      departmentName:"",
+      departmentName: "",
     };
   },
   created() {
@@ -232,8 +316,22 @@ export default {
   },
   methods: {
     async loadDepartment() {
-    this.departmentName = await this.currentDepartment();
-  },
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      const departmentId = user.departmentId;
+      if (!departmentId) {
+        this.departmentName = "Chưa xác định"; // Đặt giá trị mặc định nếu không tìm thấy
+        return;
+      }
+
+      try {
+        const department = await AssessService.fetchListData(departmentId);
+        this.departmentName = department?.data?.name || "Chưa xác định";
+      } catch (error) {
+        console.error("Error fetching department:", error);
+        this.departmentName = "Chưa xác định";
+      }
+    },
     checkValue(questionId, answerValue) {
       const detail = this.personalAssessDetails.find(
         (detail) => detail.question.id === questionId
@@ -323,16 +421,15 @@ export default {
     async loadCriteria() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
-        const projectId = user.userProjects[0].id;
-        const res = await AssessService.fetchListData(projectId);
-        if (res.code === 1010) {
-          this.listCriteria = res.data;
+        const departmentId = user.departmentId;
+        const res = await AssessService.fetchListData(departmentId);
+        if (res.code === 20403) {
+          this.listCriteria = res.data.criteria;
         }
 
         // bỏ các tiêu chí của riêng team và manager ra khỏi list
         this.listCriteria = this.listCriteria.filter(
-          (c) => c.visibleFor !== "CROSS" &&
-                c.visibleFor !== "MANAGER"
+          (c) => c.visibleFor !== "CROSS" && c.visibleFor !== "MANAGER"
         );
       } catch (error) {
         console.error("Error fetching criteria list:", error);
@@ -533,7 +630,7 @@ export default {
         const totalOfCriteria = this.calculateTotalOfCriteria(criteriaIndex);
         const percentage = Math.round(
           ((totalOfCriteria * 20) / 100) *
-          (this.listCriteria[criteriaIndex]?.point || 1)
+            (this.listCriteria[criteriaIndex]?.point || 1)
         );
 
         // Cập nhật tổng điểm tiêu chí
@@ -588,28 +685,12 @@ export default {
         0
       );
     },
-    async currentDepartment() {
-      const user = JSON.parse(localStorage.getItem("user"));
-      console.log("User ID:", user.id);
-      
-      try {
-        const department = await AuthService.fecthUserById(user.id);
-        console.log("Department Data:", department);
-        const departmentName = department.data?.userProjects[0]?.department?.name;
-        console.log("Department Name:", departmentName);
-        return departmentName || "Chưa xác định";  // Trả về tên phòng ban nếu có, nếu không thì trả về mặc định
-      } catch (error) {
-        console.error("Error fetching department:", error);
-        return "Chưa xác định";  // Nếu có lỗi thì trả về giá trị mặc định
-      }
-    }
-
   },
 };
 </script>
 
 <style scoped>
-tbody>tr>td {
+tbody > tr > td {
   vertical-align: middle;
 }
 
@@ -740,7 +821,7 @@ tbody>tr>td {
   padding-left: 20px;
 }
 
-.content>p {
+.content > p {
   color: black;
 }
 

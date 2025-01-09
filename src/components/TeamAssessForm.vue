@@ -6,17 +6,23 @@
       2024:
     </label>
     <div class="d-flex">
-      <label class="fw-bold fs-4">Tổng điểm:
+      <label class="fw-bold fs-4"
+        >Tổng điểm:
         <span class="text-danger">{{
           totalPoint ? totalPoint : "0"
-        }}</span></label>
+        }}</span></label
+      >
     </div>
   </div>
 
   <!-- Evaluation Form -->
   <form class="evaluation-form" @submit.prevent="submitForm">
     <!-- Performance Evaluation -->
-    <div v-for="(criteria, criteriaIndex) in listCriteria" :key="criteria.id" class="section mb-4">
+    <div
+      v-for="(criteria, criteriaIndex) in listCriteria"
+      :key="criteria.id"
+      class="section mb-4"
+    >
       <div class="d-flex justify-content-between">
         <label class="d-flex gap-2">
           <h4>{{ criteria.title }}</h4>
@@ -33,21 +39,41 @@
       </div>
 
       <div v-if="criteria.questions && criteria.questions.length > 0">
-        <div v-for="(question, questionIndex) in criteria.questions" :key="question.id" class="question mb-3">
-          <div class="d-flex justify-content-between title" v-if="question.title">
+        <div
+          v-for="(question, questionIndex) in criteria.questions"
+          :key="question.id"
+          class="question mb-3"
+        >
+          <div
+            class="d-flex justify-content-between title"
+            v-if="question.title"
+          >
             <label>
               {{ questionIndex + 1 }}. {{ question.title }}
               <span class="text-danger"> *</span>
             </label>
           </div>
 
-          <div v-if="question.answers" class="options d-flex justify-content-around my-3">
-            <div v-for="(answer, answerIndex) in question.answers" :key="answer.id" class="form-check">
-              <input type="radio" :id="'performanceOption' +
-                criteriaIndex +
-                questionIndex +
-                answerIndex
-                " :name="'performance' + criteriaIndex + questionIndex" class="form-check-input" @change="
+          <div
+            v-if="question.answers"
+            class="options d-flex justify-content-around my-3"
+          >
+            <div
+              v-for="(answer, answerIndex) in question.answers"
+              :key="answer.id"
+              class="form-check"
+            >
+              <input
+                type="radio"
+                :id="
+                  'performanceOption' +
+                  criteriaIndex +
+                  questionIndex +
+                  answerIndex
+                "
+                :name="'performance' + criteriaIndex + questionIndex"
+                class="form-check-input"
+                @change="
                   selectPerformanceValue(
                     criteria.id,
                     criteriaIndex,
@@ -55,26 +81,49 @@
                     questionIndex,
                     answer.value
                   )
-                  " :value="answer.value" />
-              <label :for="'performanceOption' +
-                criteriaIndex +
-                questionIndex +
-                answerIndex
-                " class="form-check-label">{{ answer.title }}
+                "
+                :value="answer.value"
+              />
+              <label
+                :for="
+                  'performanceOption' +
+                  criteriaIndex +
+                  questionIndex +
+                  answerIndex
+                "
+                class="form-check-label"
+                >{{ answer.title }}
               </label>
               <!-- Thêm  -->
 
-              <div v-if="userInfo.userRoles.some(usRole => usRole.role.name === 'MANAGER')"
-                class="avatar-group mt-2 d-flex justify-content-center">
-                <div style="position: relative; margin-right: 10px" class="avatar-container" v-for="(user, userIndex) in isShowAvatar(
-                  criteria.id,
-                  question.id,
-                  answer.value
-                )" :key="userIndex">
-                  <img :src="user.avt" alt="Avatar" class="avatar-img" :class="{
-                    'highlight-blue': user.id === userInfo.id,
-                    'highlight-yellow': user.id === selectedPerson.id
-                  }" style="cursor: pointer; border-radius: 50%;" />
+              <div
+                v-if="
+                  userInfo.userRoles.some(
+                    (usRole) => usRole.role.name === 'MANAGER'
+                  )
+                "
+                class="avatar-group mt-2 d-flex justify-content-center"
+              >
+                <div
+                  style="position: relative; margin-right: 10px"
+                  class="avatar-container"
+                  v-for="(user, userIndex) in isShowAvatar(
+                    criteria.id,
+                    question.id,
+                    answer.value
+                  )"
+                  :key="userIndex"
+                >
+                  <img
+                    :src="user.avt"
+                    alt="Avatar"
+                    class="avatar-img"
+                    :class="{
+                      'highlight-blue': user.id === userInfo.id,
+                      'highlight-yellow': user.id === selectedPerson.id,
+                    }"
+                    style="cursor: pointer; border-radius: 50%"
+                  />
                   <span class="tooltiptext">
                     <div class="d-flex flex-column text-start">
                       <span class="fw-bold text-center">{{ user.name }}</span>
@@ -88,44 +137,76 @@
             </div>
           </div>
           <div class="description">
-            <textarea v-if="isShowDescription(criteria.id, question.id)" class="form-control" :class="{
-              'error-textarea': perfValues.assessDetails.find(
-                (detail) =>
-                  detail.criteriaId === criteria.id &&
-                  detail.questionId === question.id
-              )?.hasError,
-            }" rows="3" placeholder="Nhận xét thêm" v-model="perfValues.assessDetails.find(
-              (detail) =>
-                detail.criteriaId === criteria.id &&
-                detail.questionId === question.id
-            ).description
-              " :ref="'description_' + criteria.id + '_' + question.id"></textarea>
+            <textarea
+              v-if="isShowDescription(criteria.id, question.id)"
+              class="form-control"
+              :class="{
+                'error-textarea': perfValues.assessDetails.find(
+                  (detail) =>
+                    detail.criteriaId === criteria.id &&
+                    detail.questionId === question.id
+                )?.hasError,
+              }"
+              rows="3"
+              placeholder="Nhận xét thêm"
+              v-model="
+                perfValues.assessDetails.find(
+                  (detail) =>
+                    detail.criteriaId === criteria.id &&
+                    detail.questionId === question.id
+                ).description
+              "
+              :ref="'description_' + criteria.id + '_' + question.id"
+            ></textarea>
           </div>
         </div>
       </div>
       <div v-else>
-        <div v-if="userInfo.userRoles.some(usRole => usRole.role.name === 'MANAGER')" class="spandes text-start">
-          <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []"
-            :key="index">
-            {{ answer.fromUserName ? answer.fromUserName + ": " + answer.description : " " }}<br>
+        <div
+          v-if="
+            userInfo.userRoles.some((usRole) => usRole.role.name === 'MANAGER')
+          "
+          class="spandes text-start"
+        >
+          <span
+            v-for="(answer, index) in result.criterias.find(
+              (rc) => rc.id == criteria.id
+            )?.answerUser || []"
+            :key="index"
+          >
+            {{
+              answer.fromUserName
+                ? answer.fromUserName + ": " + answer.description
+                : " "
+            }}<br />
           </span>
         </div>
         <div>
           <div class="form-group">
-            <textarea class="form-control" :class="{
-              'error-textarea': perfValues.assessDetails?.find(
-                (detail) => detail.criteriaId === criteria.id
-              )?.hasError,
-            }" rows="5" :value="perfValues.assessDetails?.find(
-              (detail) => detail.criteriaId === criteria.id
-            )?.description || ''
-              " @input="updateDescription(criteria.id, $event.target.value)" placeholder="Nhập nội dung..."></textarea>
+            <textarea
+              class="form-control"
+              :class="{
+                'error-textarea': perfValues.assessDetails?.find(
+                  (detail) => detail.criteriaId === criteria.id
+                )?.hasError,
+              }"
+              rows="5"
+              :value="
+                perfValues.assessDetails?.find(
+                  (detail) => detail.criteriaId === criteria.id
+                )?.description || ''
+              "
+              @input="updateDescription(criteria.id, $event.target.value)"
+              placeholder="Nhập nội dung..."
+            ></textarea>
           </div>
         </div>
       </div>
     </div>
     <div class="d-flex justify-content-end">
-      <button :disabled="isLoading" class="btn btn-primary" type="submit">Gửi Đánh Giá</button>
+      <button :disabled="isLoading" class="btn btn-primary" type="submit">
+        Gửi Đánh Giá
+      </button>
     </div>
   </form>
 </template>
@@ -180,7 +261,7 @@ export default {
       },
       deep: true,
     },
-    'selectedPerson.userProjects.0.id': {
+    "selectedPerson.userProjects.0.id": {
       handler(newValue) {
         if (newValue) {
           this.loadCriteria();
@@ -196,18 +277,32 @@ export default {
             toUserId: null,
             criterias: [],
           };
+          this.updateDepartmentId();
           this.fetchAssessOfUserId(this.selectedPerson.id);
         }
       },
     },
   },
   methods: {
+    async updateDepartmentId() {
+      if (this.selectedPerson && this.selectedPerson.departmentId) {
+        localStorage.setItem(
+          "userDepartmentId",
+          JSON.stringify(this.selectedPerson.departmentId)
+        );
+        await this.loadCriteria(); // Gọi lại API với departmentId mới
+      }
+    },
     async loadCriteria() {
       try {
-        const projectId = this.selectedPerson.userProjects[0].id;
-        const res = await AssessService.fetchListData(projectId);
-        if (res.code === 1010) {
-          this.listCriteria = res.data;
+        const departmentId = JSON.parse(
+          localStorage.getItem("userDepartmentId")
+        );
+        console.log("departmentId là: " + departmentId);
+
+        const res = await AssessService.fetchListData(departmentId);
+        if (res.code === 20403) {
+          this.listCriteria = res.data.criteria;
         }
         if (
           this.userInfo.userRoles.some(
@@ -215,14 +310,11 @@ export default {
           )
         ) {
           this.listCriteria = this.listCriteria.filter(
-            (c) =>
-              c.visibleFor !== "SELF"
+            (c) => c.visibleFor !== "SELF"
           );
         } else {
           this.listCriteria = this.listCriteria.filter(
-            (c) =>
-              c.visibleFor !== "SELF" &&
-              c.visibleFor !== "MANAGER"
+            (c) => c.visibleFor !== "SELF" && c.visibleFor !== "MANAGER"
           );
         }
         this.initPerfValues();
@@ -325,7 +417,7 @@ export default {
             if (!firstErrorRef) {
               firstErrorRef =
                 this.$refs[
-                `description_${detail.criteriaId}_${detail.questionId}`
+                  `description_${detail.criteriaId}_${detail.questionId}`
                 ][0]; // Lưu lại phần mô tả đầu tiên có lỗi
             }
           } else {
@@ -501,7 +593,7 @@ export default {
         const totalOfCriteria = this.calculateTotalOfCriteria(criteriaIndex);
         const percentage = Math.round(
           ((totalOfCriteria * 20) / 100) *
-          (this.listCriteria[criteriaIndex]?.point || 1)
+            (this.listCriteria[criteriaIndex]?.point || 1)
         );
 
         this.listScore[criteriaIndex].totalOfCriteria = percentage;
@@ -551,7 +643,7 @@ export default {
       );
     },
 
-    // Thêm 
+    // Thêm
     isShowAvatar(criteriaId, questionId, answerValue) {
       const criteria = this.result.criterias.find((c) => c.id === criteriaId);
       if (!criteria) {
@@ -797,7 +889,7 @@ export default {
   padding-left: 20px;
 }
 
-.content>p {
+.content > p {
   color: black;
 }
 
@@ -913,7 +1005,7 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 
-.table>table {
+.table > table {
   width: 100%;
   margin-bottom: 1rem;
   border-collapse: collapse;
@@ -966,7 +1058,7 @@ export default {
   padding-left: 20px;
 }
 
-.content>p {
+.content > p {
   color: black;
 }
 
@@ -1166,7 +1258,6 @@ export default {
 
 /* Đối với màn hình trung bình (máy tính bảng) */
 @media (min-width: 576px) and (max-width: 768px) {
-
   .left-menu,
   .right-menu {
     height: auto;
