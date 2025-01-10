@@ -98,11 +98,11 @@
                   detail.questionId === question.id
               )?.hasError,
             }" rows="3" placeholder="Nhận xét thêm" v-model="perfValues.assessDetails.find(
-              (detail) =>
-                detail.criteriaId === criteria.id &&
-                detail.questionId === question.id
-            ).description
-              " :ref="'description_' + criteria.id + '_' + question.id"></textarea>
+                (detail) =>
+                  detail.criteriaId === criteria.id &&
+                  detail.questionId === question.id
+              ).description
+                " :ref="'description_' + criteria.id + '_' + question.id"></textarea>
           </div>
         </div>
       </div>
@@ -113,11 +113,7 @@
           <span v-for="(answer, index) in result.criterias.find(
             (rc) => rc.id == criteria.id
           )?.answerUser || []" :key="index">
-            {{
-              answer.fromUserName
-                ? answer.fromUserName + ": " + answer.description
-                : " "
-            }}<br />
+            {{ answer.fromUserName ? answer.fromUserName + ": " : "Cá nhân: " }} {{ answer.description }}<br>
           </span>
         </div>
         <div>
@@ -127,10 +123,9 @@
                 (detail) => detail.criteriaId === criteria.id
               )?.hasError,
             }" rows="5" :value="perfValues.assessDetails?.find(
-              (detail) => detail.criteriaId === criteria.id
-            )?.description || ''
-              " @input="updateDescription(criteria.id, $event.target.value)"
-              placeholder="Nhập nội dung..."></textarea>
+                (detail) => detail.criteriaId === criteria.id
+              )?.description || ''
+                " @input="updateDescription(criteria.id, $event.target.value)" placeholder="Nhập nội dung..."></textarea>
           </div>
         </div>
       </div>
@@ -148,7 +143,6 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import AssessService from "@/services/AssessService";
 import UserService from "@/services/UserService";
-import EVisibleFor from "@/enum/EVisibleFor";
 export default {
   name: "TeamAssessForm",
   props: {
@@ -237,17 +231,19 @@ export default {
         if (res.code === 20403) {
           this.listCriteria = res.data.criteria;
         }
-
-        // hien thi danh sach tieu chi cho cac doi tunog cu the
-        const currentUserInfo = JSON.parse(localStorage.getItem("user"));
-        const currentUserPosition = currentUserInfo.rank.position.name;
-        if (currentUserPosition !== "LEADER") {
+        if (
+          this.userInfo.userRoles.some(
+            (usRole) => usRole.role.name === "MANAGER"
+          )
+        ) {
           this.listCriteria = this.listCriteria.filter(
-            (c) => c.visibleFor !== EVisibleFor.SELF.key && c.visibleFor !== EVisibleFor.MANAGER.key
+            (c) => c.visibleFor !== "SELF"
           );
-          console.log("listCriteria::", this.listCriteria);
+        } else {
+          this.listCriteria = this.listCriteria.filter(
+            (c) => c.visibleFor !== "SELF" && c.visibleFor !== "MANAGER"
+          );
         }
-        
         this.initPerfValues();
       } catch (error) {
         console.error("Error fetching criteria list:", error);

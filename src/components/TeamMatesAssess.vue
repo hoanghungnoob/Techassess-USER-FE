@@ -26,7 +26,7 @@
       >
         <div class="avatar">
           <img
-            :src="profile.fileInfo ? profile.fileInfo.fileUrl : defaultImage"
+            :src="profile.fileInfo?.fileUrl || defaultImage"
             alt="avatar"
           />
         </div>
@@ -160,6 +160,7 @@ import { toast } from "vue3-toastify";
 import AssessService from "@/services/AssessService";
 import ProjectService from "@/services/ProjectService";
 // import AuthService from "@/services/AuthService";
+import defaultImage from "@/assets/avata.png";
 
 export default {
   name: "TeamMatesAssess",
@@ -181,8 +182,7 @@ export default {
       isAssess: false,
       assessDetails: [],
       departmentName: "",
-      defaultImage:
-        "https://png.pngtree.com/png-clipart/20231216/original/pngtree-vector-office-worker-staff-avatar-employee-icon-png-image_13863941.png",
+      defaultImage: defaultImage,
     };
   },
   mounted() {
