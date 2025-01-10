@@ -9,10 +9,7 @@
         class="profile mb-3 d-flex align-items-center justify-content-around"
       >
         <div class="avatar">
-          <img
-            :src="userInfo.fileInfo ? userInfo.fileInfo.fileUrl : profileImage"
-            alt="avatar"
-          />
+          <img :src="userInfo.fileInfo?.fileUrl || profileImage" alt="avatar" />
         </div>
         <div class="info ms-3 text-start">
           <h3 class="mb-2">{{ userInfo.name }}</h3>
@@ -272,6 +269,7 @@
 import AssessService from "@/services/AssessService";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import profileImage from "@/assets/avata.png";
 
 export default {
   name: "TeamMatesAssess",
@@ -289,6 +287,7 @@ export default {
       sortOrder: "asc",
       totalPoint: 0,
       departmentName: "",
+      profileImage: profileImage,
     };
   },
   created() {

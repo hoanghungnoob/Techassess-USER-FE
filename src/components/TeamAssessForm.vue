@@ -342,7 +342,7 @@ export default {
             }
           });
         }
-
+        
         this.initPerfValues();
       } catch (error) {
         console.error("Error fetching criteria list:", error);

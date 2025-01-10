@@ -56,7 +56,7 @@
       <div v-else class="spandes text-start">
         <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []"
           :key="index">
-          {{ answer.fromUserName ? answer.fromUserName + ": " : "Leader: " }} {{ answer.description }}<br>
+          {{ answer.fromUserName ? answer.fromUserName + ": " : "Cá nhân: " }} {{ answer.description }}<br>
         </span>
       </div>
     </div>
