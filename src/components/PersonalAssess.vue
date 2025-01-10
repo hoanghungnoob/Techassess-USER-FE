@@ -1,10 +1,15 @@
 <template>
-  <div class="container-fluid row justify-content-md-center align-items-center" v-if="userInfo">
+  <div
+    class="container-fluid row justify-content-md-center align-items-center"
+    v-if="userInfo"
+  >
     <!-- Left Menu -->
     <div class="col-md-4 left-menu p-3">
-      <div class="profile mb-3 d-flex align-items-center justify-content-around">
+      <div
+        class="profile mb-3 d-flex align-items-center justify-content-around"
+      >
         <div class="avatar">
-          <img :src="userInfo.fileInfo ? userInfo.fileInfo.fileUrl : profileImage" alt="avatar" />
+          <img :src="userInfo.fileInfo?.fileUrl || profileImage" alt="avatar" />
         </div>
         <div class="info ms-3 text-start">
           <h3 class="mb-2">{{ userInfo.name }}</h3>
@@ -17,23 +22,24 @@
           <div class="line">
             <strong>Dự án hiện tại:</strong> {{ userInfo.userProjects[0].name }}
           </div>
-          <!-- <div class="line">
-            <strong>Thời gian làm việc:</strong> {{ calculateWorkTime() }}
-          </div> -->
+          <div class="line"><strong>Bộ phận:</strong> {{ departmentName }}</div>
         </div>
       </div>
-      <h4 v-if="isAssess" class="text-success">
-        Bạn đã đánh giá cho bản thân
-      </h4>
+      <h4 v-if="isAssess" class="text-success">Bạn đã đánh giá cho bản thân</h4>
     </div>
 
     <!-- Right Menu -->
     <div class="col-md-8 right-menu p-4">
       <!-- Evaluation Header -->
-      <div class="evaluation-header text-start mb-2 d-flex justify-content-between">
-        <label class="fw-bold fs-4">Đánh giá quý III năm 2024 cho bản thân</label>
+      <div
+        class="evaluation-header text-start mb-2 d-flex justify-content-between"
+      >
+        <label class="fw-bold fs-4"
+          >Đánh giá quý III năm 2024 cho bản thân</label
+        >
         <div class="d-flex">
-          <label class="fw-bold fs-4">Tổng điểm:
+          <label class="fw-bold fs-4"
+            >Tổng điểm:
             <span v-if="isViewing == true" class="text-danger">{{
               this.personalAssess.totalPoint
                 ? this.personalAssess.totalPoint
@@ -50,7 +56,11 @@
       <!-- @submit.prevent="submit" -->
       <form class="evaluation-form" @submit.prevent="submitForm">
         <!-- Performance Evaluation -->
-        <div v-for="(criteria, criteriaIndex) in listCriteria" :key="criteria.id" class="section mb-4">
+        <div
+          v-for="(criteria, criteriaIndex) in listCriteria"
+          :key="criteria.id"
+          class="section mb-4"
+        >
           <div class="d-flex justify-content-between">
             <label class="d-flex gap-2">
               <h5>{{ criteria.title }}</h5>
@@ -66,21 +76,42 @@
             </div>
           </div>
           <div v-if="criteria.questions && criteria.questions.length > 0">
-            <div v-for="(question, questionIndex) in criteria.questions" :key="question.id" class="question mb-3">
-              <div class="d-flex justify-content-between title" v-if="question.title">
+            <div
+              v-for="(question, questionIndex) in criteria.questions"
+              :key="question.id"
+              class="question mb-3"
+            >
+              <div
+                class="d-flex justify-content-between title"
+                v-if="question.title"
+              >
                 <label>
                   {{ questionIndex + 1 }}. {{ question.title }}
                   <span class="text-danger"> *</span>
                 </label>
               </div>
 
-              <div v-if="question.answers" class="options d-flex justify-content-around my-3">
-                <div v-for="(answer, answerIndex) in question.answers" :key="answer.id" class="form-check">
-                  <input v-if="!isAssess" type="radio" :id="'performanceOption' +
-                    criteriaIndex +
-                    questionIndex +
-                    answerIndex
-                    " :name="'performance' + criteriaIndex + questionIndex" class="form-check-input" @change="
+              <div
+                v-if="question.answers"
+                class="options d-flex justify-content-around my-3"
+              >
+                <div
+                  v-for="(answer, answerIndex) in question.answers"
+                  :key="answer.id"
+                  class="form-check"
+                >
+                  <input
+                    v-if="!isAssess"
+                    type="radio"
+                    :id="
+                      'performanceOption' +
+                      criteriaIndex +
+                      questionIndex +
+                      answerIndex
+                    "
+                    :name="'performance' + criteriaIndex + questionIndex"
+                    class="form-check-input"
+                    @change="
                       selectPerformanceValue(
                         criteria.id,
                         criteriaIndex,
@@ -88,20 +119,33 @@
                         questionIndex,
                         answer.value
                       )
-                      " :value="answer.value" />
+                    "
+                    :value="answer.value"
+                  />
 
-                  <input v-else type="radio" :id="'performanceOption' +
-                    criteriaIndex +
-                    questionIndex +
-                    answerIndex
-                    " :name="'performance' + criteriaIndex + questionIndex" class="form-check-input"
+                  <input
+                    v-else
+                    type="radio"
+                    :id="
+                      'performanceOption' +
+                      criteriaIndex +
+                      questionIndex +
+                      answerIndex
+                    "
+                    :name="'performance' + criteriaIndex + questionIndex"
+                    class="form-check-input"
                     :checked="checkValue(question.id, answer.value)"
-                    :disabled="!checkValue(question.id, answer.value)" />
-                  <label :for="'performanceOption' +
-                    criteriaIndex +
-                    questionIndex +
-                    answerIndex
-                    " class="form-check-label">
+                    :disabled="!checkValue(question.id, answer.value)"
+                  />
+                  <label
+                    :for="
+                      'performanceOption' +
+                      criteriaIndex +
+                      questionIndex +
+                      answerIndex
+                    "
+                    class="form-check-label"
+                  >
                     {{ answer.title }}
                   </label>
                 </div>
@@ -119,56 +163,94 @@
                 </div>
               </div> -->
               <div v-if="isAssess" class="description">
-                <textarea v-if="personalAssessDetails?.find(
-                  detail => detail.criteria.id === criteria.id &&
-                    detail.question.id === question.id &&
-                    detail.description !== null
-                )" class="form-control" :class="{
-                  'error-textarea': perfValues.assessDetails?.find(
-                    (detail) => detail.criteriaId === criteria.id
-                  )?.hasError,
-                }" rows="2" :value="personalAssessDetails?.find(
-                  (detail) => detail.criteria.id === criteria.id && detail.question.id === question.id
-                )?.description || ''
-                  " readonly>
+                <textarea
+                  v-if="
+                    personalAssessDetails?.find(
+                      (detail) =>
+                        detail.criteria.id === criteria.id &&
+                        detail.question.id === question.id &&
+                        detail.description !== null
+                    )
+                  "
+                  class="form-control"
+                  :class="{
+                    'error-textarea': perfValues.assessDetails?.find(
+                      (detail) => detail.criteriaId === criteria.id
+                    )?.hasError,
+                  }"
+                  rows="2"
+                  :value="
+                    personalAssessDetails?.find(
+                      (detail) =>
+                        detail.criteria.id === criteria.id &&
+                        detail.question.id === question.id
+                    )?.description || ''
+                  "
+                  readonly
+                >
                 </textarea>
               </div>
 
               <div v-else class="description">
-                <textarea v-if="isShowDescription(criteria.id, question.id)" class="form-control" :class="{
-                  'error-textarea': perfValues.assessDetails.find(
-                    (detail) =>
-                      detail.criteriaId === criteria.id &&
-                      detail.questionId === question.id
-                  ).hasError,
-                }" rows="2" placeholder="Nhận xét thêm" v-model="perfValues.assessDetails.find(
-                  (detail) =>
-                    detail.criteriaId === criteria.id &&
-                    detail.questionId === question.id
-                ).description
-                  " :ref="'description_' + criteria.id + '_' + question.id"></textarea>
+                <textarea
+                  v-if="isShowDescription(criteria.id, question.id)"
+                  class="form-control"
+                  :class="{
+                    'error-textarea': perfValues.assessDetails.find(
+                      (detail) =>
+                        detail.criteriaId === criteria.id &&
+                        detail.questionId === question.id
+                    ).hasError,
+                  }"
+                  rows="2"
+                  placeholder="Nhận xét thêm"
+                  v-model="
+                    perfValues.assessDetails.find(
+                      (detail) =>
+                        detail.criteriaId === criteria.id &&
+                        detail.questionId === question.id
+                    ).description
+                  "
+                  :ref="'description_' + criteria.id + '_' + question.id"
+                ></textarea>
               </div>
             </div>
           </div>
           <div v-else>
             <div class="form-group">
-              <textarea v-if="!isAssess" class="form-control" :class="{
-                'error-textarea': perfValues.assessDetails?.find(
-                  (detail) => detail.criteriaId === criteria.id
-                )?.hasError,
-              }" rows="2" :value="perfValues.assessDetails?.find(
-                (detail) => detail.criteriaId === criteria.id
-              )?.description || ''
-                " @input="updateDescription(criteria.id, $event.target.value)"
-                placeholder="Nhập nội dung..."></textarea>
-              <textarea v-else class="form-control" :class="{
-                'error-textarea': perfValues.assessDetails?.find(
-                  (detail) => detail.criteriaId === criteria.id
-                )?.hasError,
-              }" rows="2" :value="personalAssessDetails?.find(
-                (detail) => detail.criteria.id === criteria.id
-              )?.description || ''
-                " readonly></textarea>
+              <textarea
+                v-if="!isAssess"
+                class="form-control"
+                :class="{
+                  'error-textarea': perfValues.assessDetails?.find(
+                    (detail) => detail.criteriaId === criteria.id
+                  )?.hasError,
+                }"
+                rows="2"
+                :value="
+                  perfValues.assessDetails?.find(
+                    (detail) => detail.criteriaId === criteria.id
+                  )?.description || ''
+                "
+                @input="updateDescription(criteria.id, $event.target.value)"
+                placeholder="Nhập nội dung..."
+              ></textarea>
+              <textarea
+                v-else
+                class="form-control"
+                :class="{
+                  'error-textarea': perfValues.assessDetails?.find(
+                    (detail) => detail.criteriaId === criteria.id
+                  )?.hasError,
+                }"
+                rows="2"
+                :value="
+                  personalAssessDetails?.find(
+                    (detail) => detail.criteria.id === criteria.id
+                  )?.description || ''
+                "
+                readonly
+              ></textarea>
             </div>
           </div>
         </div>
@@ -184,9 +266,10 @@
   </div>
 </template>
 <script>
+import AssessService from "@/services/AssessService";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
-import AssessService from "@/services/AssessService";
+import profileImage from "@/assets/avata.png";
 
 export default {
   name: "TeamMatesAssess",
@@ -203,6 +286,8 @@ export default {
       sortKey: "name",
       sortOrder: "asc",
       totalPoint: 0,
+      departmentName: "",
+      profileImage: profileImage,
     };
   },
   created() {
@@ -212,6 +297,7 @@ export default {
     }
     this.loadCriteria();
     this.loadMyAssess();
+    this.loadDepartment();
   },
   watch: {
     // xem description của từng ô nếu thay đổi thì cập nhật lên localStorage
@@ -228,9 +314,26 @@ export default {
     };
   },
   methods: {
+    async loadDepartment() {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      const departmentId = user.departmentId;
+      if (!departmentId) {
+        this.departmentName = "Chưa xác định"; // Đặt giá trị mặc định nếu không tìm thấy
+        return;
+      }
+
+      try {
+        const department = await AssessService.fetchListData(departmentId);
+        this.departmentName = department?.data?.name || "Chưa xác định";
+      } catch (error) {
+        console.error("Error fetching department:", error);
+        this.departmentName = "Chưa xác định";
+      }
+    },
     checkValue(questionId, answerValue) {
       const detail = this.personalAssessDetails.find(
-        (detail) => detail.question.id === questionId
+        (detail) => detail.question?.id === questionId
       );
       if (detail) {
         return detail.value === answerValue;
@@ -317,17 +420,24 @@ export default {
     async loadCriteria() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
-        const projectId = user.userProjects[0].id;
-        const res = await AssessService.fetchListData(projectId);
-        if (res.code === 1010) {
-          this.listCriteria = res.data;
+        const departmentId = user.departmentId;
+        const res = await AssessService.fetchListData(departmentId);
+        if (res.code === 20403) {
+          this.listCriteria = res.data.criteria;
         }
 
         // bỏ các tiêu chí của riêng team và manager ra khỏi list
-        this.listCriteria = this.listCriteria.filter(
-          (c) => c.visibleFor !== "CROSS" &&
-                c.visibleFor !== "MANAGER"
-        );
+        this.listCriteria = this.listCriteria
+          .filter((c) => c.visibleFor !== "CROSS" && c.visibleFor !== "MANAGER")
+          .sort((c1, c2) => {
+            if (c1.questions == null && !c2.questions == null) {
+              return 1;
+            } else if (!c1.questions == null && c2.questions === null) {
+              return -1;
+            } else {
+              return c1.id - c2.id;
+            }
+          });
       } catch (error) {
         console.error("Error fetching criteria list:", error);
       }
@@ -348,8 +458,8 @@ export default {
           allValuesSelected = false;
         }
 
-        // Nếu giá trị >= 3, kiểm tra mô tả
-        if (detail.value >= 3 && isCriteriaToCheck) {
+        // Nếu giá trị >= 4, kiểm tra mô tả
+        if (detail.value >= 4 && isCriteriaToCheck) {
           const isDescriptionFilled =
             detail.description && detail.description.trim() !== "";
 
@@ -374,6 +484,8 @@ export default {
         ) {
           allDescriptionsFilled = false;
           detail.hasError = true;
+        } else {
+          detail.hasError = false;
         }
       });
 
@@ -395,6 +507,7 @@ export default {
         return;
       }
 
+      this.isAssess = true;
       // Nếu tất cả hasError đều false thì xóa field hasError
       this.perfValues.assessDetails.forEach((detail) => {
         if (!detail.hasError) {
@@ -468,7 +581,7 @@ export default {
       );
 
       // Kiểm tra điều kiện để hiển thị mô tả
-      return question && question.value >= 3;
+      return question && question.value >= 4;
     },
     selectPerformanceValue(
       criteriaId,
@@ -524,7 +637,7 @@ export default {
         const totalOfCriteria = this.calculateTotalOfCriteria(criteriaIndex);
         const percentage = Math.round(
           ((totalOfCriteria * 20) / 100) *
-          (this.listCriteria[criteriaIndex]?.point || 1)
+            (this.listCriteria[criteriaIndex]?.point || 1)
         );
 
         // Cập nhật tổng điểm tiêu chí
@@ -584,7 +697,7 @@ export default {
 </script>
 
 <style scoped>
-tbody>tr>td {
+tbody > tr > td {
   vertical-align: middle;
 }
 
@@ -715,7 +828,7 @@ tbody>tr>td {
   padding-left: 20px;
 }
 
-.content>p {
+.content > p {
   color: black;
 }
 

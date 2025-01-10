@@ -4,7 +4,6 @@
       Chi tiết đánh giá quý III năm 2024 của:
       {{ selectedPerson ? selectedPerson.name : "" }}
     </label>
-    <!-- <span style="color: red; font-size: 24px;">Tổng điểm: {{ calculateGrandTotalScore() }}</span> -->
   </div>
 
   <form class="evaluation-form">
@@ -55,8 +54,9 @@
         </div>
       </div>
       <div v-else class="spandes text-start">
-        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []" :key="index">
-          {{answer.fromUserName?answer.fromUserName + ": " : "" }} {{ answer.description }}<br> 
+        <span v-for="(answer, index) in result.criterias.find((rc) => rc.id == criteria.id)?.answerUser || []"
+          :key="index">
+          {{ answer.fromUserName ? answer.fromUserName + ": " : "Cá nhân: " }} {{ answer.description }}<br>
         </span>
       </div>
     </div>
@@ -94,6 +94,8 @@ export default {
             toUserId: null,
             criterias: [],
           };
+          this.updateDepartmentId();
+
           this.fetchAssessOfUserId(this.selectedPerson.id);
         }
       },
@@ -111,6 +113,15 @@ export default {
     this.loadCriteria();
   },
   methods: {
+    async updateDepartmentId() {
+      if (this.selectedPerson && this.selectedPerson.departmentId) {
+        localStorage.setItem(
+          "userDepartmentId",
+          JSON.stringify(this.selectedPerson.departmentId)
+        );
+        await this.loadCriteria(); // Gọi lại API với departmentId mới
+      }
+    },
     isShowAvatar(criteriaId, questionId, answerValue) {
       const criteria = this.result.criterias.find((c) => c.id === criteriaId);
       if (!criteria) {
@@ -139,20 +150,9 @@ export default {
       try {
         const response = await AssessService.fetchAssessOfUser(userId);
         this.listAssess = response.data;
-        console.log(
-          "DANH SACH CAC DANH GIA CHO NGUOI DA CHON::",
-          this.listAssess
-        );
-
         this.selfAssessDetails = response.data.filter(
           (assess) => assess.assessmentType === "SELF"
         );
-        console.log(
-          "CHI TIET DANH GIA BAN THAN CHO NGUOI DA CHON::",
-          this.selfAssessDetails
-        );
-
-        // Convert data -> assessDetail
         if (this.listAssess.length == 0) return;
 
         this.listAssess.forEach(async (assess) => {
@@ -278,20 +278,20 @@ export default {
           }
         });
 
-        console.log("RESULT::", this.result);
       } catch (error) {
         console.error("Error fetching assess by userid:", error);
       }
     },
     async loadCriteria() {
       try {
-        const projectId = this.selectedPerson.userProjects[0].id;
-        const res = await AssessService.fetchListData(projectId);
-        if (res.code === 1010) {
-          this.listCriteria = res.data;
+        const departmentId = JSON.parse(
+          localStorage.getItem("userDepartmentId")
+        );
+        const res = await AssessService.fetchListData(departmentId);
+        if (res.code === 20403) {
+          this.listCriteria = res.data.criteria;
         }
 
-        // bỏ tiêu chí Đánh giá của quản lí ra khỏi list
         this.listCriteria = this.listCriteria.filter(
           (c) => c.visibleFor !== "MANAGER" && c.questionId !== null
         );
@@ -393,7 +393,7 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 
-.table > table {
+.table>table {
   width: 100%;
   margin-bottom: 1rem;
   border-collapse: collapse;
@@ -446,7 +446,7 @@ export default {
   padding-left: 20px;
 }
 
-.content > p {
+.content>p {
   color: black;
 }
 
@@ -646,6 +646,7 @@ export default {
 
 /* Đối với màn hình trung bình (máy tính bảng) */
 @media (min-width: 576px) and (max-width: 768px) {
+
   .left-menu,
   .right-menu {
     height: auto;

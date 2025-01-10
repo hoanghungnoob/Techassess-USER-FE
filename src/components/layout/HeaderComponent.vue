@@ -33,7 +33,9 @@
               <li v-if="userInfo">
                 <div class="user-info d-flex align-items-center">
                   <img :src="userInfo.fileInfo ? userInfo.fileInfo.fileUrl : profileImage" alt="Avatar" class="avatar" />
-                  <span class="ml-2" data-bs-toggle="dropdown">
+                  <span class="ml-2 text-center" data-bs-toggle="dropdown">
+                    {{ userInfo.rank.position.name}}
+                    <br>
                     {{ userInfo.name }}
                     <i class="ms-2 bi bi-caret-down-square-fill dropdown"></i>
                   </span>
@@ -121,6 +123,7 @@ export default {
       localStorage.removeItem("user");
       localStorage.removeItem("assessDetails");
       localStorage.removeItem("listData");
+      localStorage.removeItem("userDepartmentId");
       localStorage.removeItem("assess-by-user" + this.userInfo.id);
       this.userInfo = null;
       toast.success("Đăng xuất thành công", {
