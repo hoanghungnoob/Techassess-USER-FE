@@ -354,6 +354,7 @@ export default {
       if (res && res.code === 1010) {
         this.isAssess = true;
         this.personalAssessDetails = res.data.assessDetails;
+        this.totalPoint = res.data.totalPoint;
         console.log("PERSONAL ASSESS DETAILS:: ", this.personalAssessDetails);
       }
       if (res && res.code === 404) {
@@ -430,9 +431,15 @@ export default {
         this.listCriteria = this.listCriteria
           .filter((c) => c.visibleFor !== "CROSS" && c.visibleFor !== "MANAGER")
           .sort((c1, c2) => {
-            if (c1.questions == null && !c2.questions == null) {
+            if (
+              (c1.questions === undefined || c1.questions.length === 0) &&
+              !(c2.questions === undefined || c2.questions.length === 0)
+            ) {
               return 1;
-            } else if (!c1.questions == null && c2.questions === null) {
+            } else if (
+              !(c1.questions === undefined || c1.questions.length === 0) &&
+              (c2.questions === undefined || c2.questions.length === 0)
+            ) {
               return -1;
             } else {
               return c1.id - c2.id;
