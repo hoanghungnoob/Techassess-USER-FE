@@ -18,25 +18,26 @@ const UserService = {
     console.log(diffDays);
     return diffDays;
   },
-  uploadAvatar: async (user, formData) => {
+  async uploadAvatar(user, formData) {
     try {
       const jwt = localStorage.getItem("accessToken");
-
+  
+      // Gọi API PUT để upload avatar, sử dụng formData
       const response = await axios.put(
-        `${InfoUrl}/api/users/${user.id}`,
-        formData,
+        `${InfoUrl}/api/users/updateUserWithAvatar/${user.id}`,
+        formData,  // Truyền formData chứa avatar
         {
           headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${jwt}`, // Di chuyển vào headers
+            "Content-Type": "multipart/form-data",  // Đảm bảo gửi đúng Content-Type
+            Authorization: `Bearer ${jwt}`,
           },
         }
       );
       return response.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-  },
+  },  
   fetchUserById: async (userId) => {
     try {
       const response = await axios.get(`${InfoUrl}/api/users/${userId}`);

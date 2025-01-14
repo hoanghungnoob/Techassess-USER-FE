@@ -133,41 +133,36 @@ export default {
       this.avatarUpdate = file;
     },
     async uploadAvatar() {
-      if (!this.avatarUpdate) {
-        alert("No avatar selected!");
-        return;
+  if (!this.avatarUpdate) {
+    alert("No avatar selected!");
+    return;
+  }
+  this.isUpdating = true;
+
+  const formData = new FormData();
+  formData.append("avatar", this.avatarUpdate);  // Đây là ảnh cần upload
+  formData.append("request", JSON.stringify(this.userInfo));  // Thông tin người dùng nếu cần
+
+  try {
+    const response = await UserService.uploadAvatar(this.userInfo, formData);
+    if (response.code === 1013) {
+      toast.success("Cập nhật avatar thành công!");
+      const res = await UserService.fetchUserById(this.userInfo.id);
+      if (res.code === 1010) {
+        localStorage.setItem("user", JSON.stringify(res.data));
       }
-      this.isUpdating = true;
-
-      const formData = new FormData();
-      formData.append("avatar", this.avatarUpdate);
-
-      try {
-        // Gửi request API upload avatar
-        const response = await UserService.uploadAvatar(
-          this.userInfo,
-          formData
-        );
-        if (response.code === 1013) {
-          toast.success("Cập nhật avatar thành công!");
-
-          //fetch user
-          const res = await UserService.fetchUserById(this.userInfo.id);
-
-          if (res.code === 1010) {
-            localStorage.setItem("user", JSON.stringify(res.data));
-          }
-          this.userInfo = JSON.parse(localStorage.getItem("user"));
-          this.isUpdating = false;
-          setTimeout(() => {
-            window.location.reload();
-          });
-        }
-      } catch (error) {
-        console.error("Error uploading avatar:", error);
-        toast.error("Không thể cập nhật avatar. Vui lòng thử lai.");
-      }
-    },
+      this.userInfo = JSON.parse(localStorage.getItem("user"));
+      this.isUpdating = false;
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+  } catch (error) {
+    console.error("Error uploading avatar:", error);
+    toast.error("Không thể cập nhật avatar. Vui lòng thử lại.");
+    this.isUpdating = false;
+  }
+},
 
     async fetchTeamMates() {
       if (!this.userInfo || !this.userInfo.id) {
